@@ -11,6 +11,9 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Auth::routes();
+
+Route::get('/', 'HomeController@index');
+Route::resource('/units', UnitsController::class);
+Route::resource('/subscriptions', SubscriptionsController::class);

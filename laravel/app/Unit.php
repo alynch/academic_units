@@ -15,4 +15,17 @@ class Unit extends Model
             'type_id'
         );
     }
+
+    public function area()
+    {
+        return $this->belongsTo(
+            UnitArea::class,
+            'area_id'
+        );
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'code';
+    }
 }
