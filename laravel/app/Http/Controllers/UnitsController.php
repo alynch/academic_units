@@ -127,14 +127,48 @@ class UnitsController extends Controller
         return redirect('/units');
     }
 
+
     private function notifySubscribers($unit, $event)
     {
         $subscribers = Subscription::all();
 
         $client = new \GuzzleHttp\Client();
         foreach ($subscribers as $subscriber) {
-            $data = [ 'json' => [ 'event' => $event, 'unit' => $unit ] ];
-            $response = $client->post($subscriber->url, $data);
+            $response_code = '';
+            $signature = $this->generateSignature($subscriber->key, $unit->toArray());
+            $data = [ 'json' => [ 
+                 'X-AU-signature' => $signature, 'event' => $event, 'unit' => $unit ]
+            ];
+            try {
+                $response = $client->post($subscriber->url, $data);
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                $response = $e->getResponse();
+            }
+
+            // Log result in DB
+            $log_data = [
+                'subscription_id' => $subscriber->id,
+                'status' => $response->getStatusCode(),
+                'event' => $event,
+                'unit' => $unit->code
+            ];
+            $subscriber->logs()->create($log_data);
         }
     }
+
+
+
+    /*
+    hash_hmac($algorithm, $data, $secret)).
+
+    $generated = 'sha1=' . hash_hmac('sha1', $request->getContent(), $config->get('token'));
+    $signature = hash_hmac( 'sha256', $request->input('timestamp') . $request->input('token'), $config->get('token')
+    $generatedHash = hash_hmac('sha256', $request->getContent(), $config->get('token'));
+    */
+
+    private function generateSignature($key, $payload)
+    {
+        ksort($payload);
+        return hash_hmac('sha256', json_encode($payload), $key);
+     }
 }
