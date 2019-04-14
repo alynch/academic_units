@@ -17,3 +17,5 @@ Auth::routes();
 Route::get('/', 'HomeController@index');
 Route::resource('/units', UnitsController::class);
 Route::resource('/subscriptions', SubscriptionsController::class);
+
+Route::get('/api', 'APIController@index');

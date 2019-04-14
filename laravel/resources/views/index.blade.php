@@ -12,6 +12,9 @@
                     <li class="list-group-item">
                         <a href="{{ url('/subscriptions') }}">Subscriptions</a>
                     </li>
+                    <li class="list-group-item">
+                        <a href="{{ url('/api') }}">API</a>
+                    </li>
                 </ul>
             </div>
         </div>
