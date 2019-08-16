@@ -30,5 +30,4 @@ class UnitsController extends \App\Http\Controllers\Controller
         $unit->load('type', 'area');
         return $unit;
     }
-
 }
